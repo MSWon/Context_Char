@@ -19,7 +19,6 @@ config.gpu_options.allow_growth = True
 ## file name
 embedding_filename = "polyglot-en.pkl"   ## pretrained 64 dim word embedding
 df = pd.read_csv("yelp_train.csv", encoding = 'cp1252')
-## df_train = df_train[df_train['label'] != 'unsup']
 reviews = list(df['corpus'])
 ## Parameters
 window = 5
@@ -64,8 +63,8 @@ with tf.Session(config=config) as sess:
         
     start_time = time.time()
     sess.run(init)
-    ## saver.restore(sess, modelName)
-    ## print("model restored")
+    saver.restore(sess, modelName)
+    print("model restored")
 
     
     for epoch in xrange(training_epochs):
