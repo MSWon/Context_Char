@@ -8,8 +8,9 @@ Created on Mon Jul  9 20:59:40 2018
 import numpy as np
 import pandas as pd
 import re
+
 from itertools import chain
-## from nltk.corpus import stopwords
+from nltk.corpus import stopwords
 from nltk import tokenize
 
 
@@ -18,9 +19,8 @@ class Context():
     
     def __init__(self):
         self.data_index = 0
-        ## self.stop = set(stopwords.words('english'))
-        self.stop = ['.', ',', '"', "'", '?', '!', ':', ';', '(', ')', 
-                     '[', ']', '{', '}','-','=']
+        self.stop = set(stopwords.words('english'))
+        ## self.stop.update(['.', ',', '"', "'", '?', '!', ':', ';', '(', ')', '[', ']', '{', '}','<br />'])
         
     def read_data(self, filename): 
         with open(filename, 'r',encoding='utf-8') as f:
@@ -28,13 +28,12 @@ class Context():
         return data
     
     def make_corpus(self, corpus):
-        print("Tokenizing corpus!\n Could take few minutes!")
-        tokens = []       
+        print("Making corpus!\n Could take few minutes!")
+        tokens = []
         for sent in corpus:
-            sent = re.sub('[^a-zA-Z| |\']',"",sent)
+            sent = re.sub("<br />", "", sent)
             t = [token for token in tokenize.word_tokenize(sent) if token not in self.stop]
-            if(len(t) > 1):
-                tokens.append(t)
+            tokens.append(t)
         print("Tokenize done!")
         return tokens
     
@@ -45,7 +44,7 @@ class Context():
         char = list(set(chain.from_iterable(s)))       
         c = pd.DataFrame(char)
         c.to_csv("./char_list.csv", sep = ",")
-        print("char_list saved! size : {}".format(len(char)))
+        print("char_list saved!")
         return char
     
     def get_embedding(self, filename):
@@ -85,17 +84,15 @@ class Context():
                                  if i+j >= 0 and not j==0 and i+j < len(sent)]            
                     context_sub.append(context)
                     target_sub.append(target)
-            
-            ## mask = np.random.permutation(len(context_sub))
+                    
+            mask = np.random.permutation(len(context_sub))
             context_sub = np.array(context_sub)
             target_sub = np.array(target_sub)
-            ## context_sub = context_sub[mask]
-            ## target_sub = target_sub[mask]
-            
-            if(len(context_sub) > 1):
+            context_sub = context_sub[mask]
+            target_sub = target_sub[mask]
                 
-                context_list.append(context_sub)
-                target_list.append(target_sub)
+            context_list.append(context_sub)
+            target_list.append(target_sub)
                         
         self.data_index += batch_size   
         return target_list, context_list
@@ -106,7 +103,7 @@ class Context():
     
         batch_avg_vec = []
         for batch in context:
-            avg_vec_list = [np.mean(index2vec[index_list], axis=0) for index_list in batch]           
+            avg_vec_list = [np.mean(index2vec[index_list], axis=0) for index_list in batch]
             batch_avg_vec.append(avg_vec_list)
           
         return batch_avg_vec
