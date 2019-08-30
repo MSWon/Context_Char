@@ -14,7 +14,7 @@ class Char2Vec():
     def __init__(self, input_char, max_len=100):
         
         self.max_len = max_len
-        self.seq_len = tf.placeholder(tf.int32, shape = [None], name = "seq_len")
+        self.seq_len = tf.placeholder(tf.int32, shape = [None])
         self.char_list = input_char
         self.char_dict = {char:index for index, char in enumerate(self.char_list)}
 
@@ -78,7 +78,6 @@ class Char2BiLSTM():
     
     def BiLSTM_layer(self, X, input_state, seq_len):
         ## input_state shape : (2, Batch_size, lstm_unit)
-        X = tf.nn.l2_normalize(X, axis = 2)
         (output_fw, output_bw), states = tf.nn.bidirectional_dynamic_rnn(self.lstm_fw_cell, 
                                             self.lstm_bw_cell,dtype=tf.float32, initial_state_fw=input_state, 
                                             initial_state_bw = input_state, inputs=X, sequence_length=seq_len)
