@@ -4,7 +4,7 @@ Created on Thu Aug  2 15:25:37 2018
 
 @author: jbk48
 """
-
+## added 2
 import numpy as np
 import tensorflow as tf
 import Char2BiLSTM
